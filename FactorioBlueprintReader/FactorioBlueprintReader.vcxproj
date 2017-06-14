@@ -147,6 +147,7 @@
     <ClCompile Include="..\gzip.cpp" />
     <ClCompile Include="..\json.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\util.cpp" />
     <ClCompile Include="..\zlib\adler32.c" />
     <ClCompile Include="..\zlib\compress.c" />
     <ClCompile Include="..\zlib\crc32.c" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\blueprint.h" />
     <ClInclude Include="..\gzip.h" />
     <ClInclude Include="..\json.h" />
+    <ClInclude Include="..\util.h" />
     <ClInclude Include="..\zlib\crc32.h" />
     <ClInclude Include="..\zlib\deflate.h" />
     <ClInclude Include="..\zlib\gzguts.h" />

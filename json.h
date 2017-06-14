@@ -11,15 +11,15 @@ class JSONObject {
 public:
   JSONObject();
   JSONObject(const std::string& jsonString);
-  JSONObject(JSONObject* makeCopyFrom);
+  JSONObject(const JSONObject* makeCopyFrom);
   virtual ~JSONObject();
 
-  bool IsNull();
-  bool IsArray();
-  bool IsObject();
-  bool IsBool();
-  bool IsString();
-  bool IsNumber();
+  bool IsNull()   const;
+  bool IsArray()  const;
+  bool IsObject() const;
+  bool IsBool()   const;
+  bool IsString() const;
+  bool IsNumber() const;
 
   bool ParseFile(const std::string& filePath);
   bool Parse(const std::string& jsonString);
@@ -34,23 +34,23 @@ public:
   JSONObject* SetNameValue(const std::string& name, JSONObject* value);
   void AddToArray(JSONObject* value);
 
-  JSONObject* Get(const std::string& name);
-  JSONObject* GetPath(const std::string& path, char delim = '.');
-  std::vector<JSONObject*>* GetArray();
-  std::vector<JSONObject*>* GetArray(const std::string& name);
-  double GetNumber();
-  double GetNumber(const std::string& name);
-  std::string GetString();
-  std::string GetString(const std::string& name);
-  bool GetBool();
-  bool GetBool(const std::string& name);
-  std::vector<std::string> GetChildNames();
-  std::string ToString(int indentationDelta = 0, int indentation = 0);
-
+  JSONObject* Get(const std::string& name) const;
+  const JSONObject* GetPath(const std::string& path, char delim = '.') const;
+  std::vector<JSONObject*>* GetArray() const;
+  std::vector<JSONObject*>* GetArray(const std::string& name) const;
+  double GetNumber() const;
+  double GetNumber(const std::string& name) const;
+  std::string GetString() const;
+  std::string GetString(const std::string& name) const;
+  bool GetBool() const;
+  bool GetBool(const std::string& name) const;
+  std::vector<std::string> GetChildNames() const;
+  std::string ToString(int indentationDelta = 0, int indentation = 0) const;
   bool IsOk();
 
-protected:
 private:
+  void ClearData();
+
   bool isNull;
   bool isArray;
   bool isObject;
@@ -58,11 +58,9 @@ private:
   bool isString;
   bool isNumber;
 
-  void* data;
-  std::map<std::string, int>* indexMap;
-  std::vector<std::string>* nameVector;
-
-  void ClearData();
+  void* pData;
+  std::map<std::string, int>* pIndexMap;
+  std::vector<std::string>* pNameVector;
 };
 
 #endif // JSONOBJECT_H

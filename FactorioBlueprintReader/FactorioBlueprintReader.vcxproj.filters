@@ -81,6 +81,9 @@
     <ClCompile Include="..\blueprint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base64.h">
@@ -126,6 +129,9 @@
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\blueprint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

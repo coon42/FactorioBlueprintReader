@@ -9,11 +9,12 @@ using namespace std;
 class Blueprint {
 public:
   bool load(const char* pBluePrint);
-  string jsonStr();
+  const char* toJsonStr() const;
 
 private:
-  int version{0};
-  JSONObject jsonObj;
+  int version_{0};
+  JSONObject json_;
+  mutable string jsonStrCache_;
 };
 
 #endif // BLUEPRINT_H__

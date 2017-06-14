@@ -1,11 +1,12 @@
-#include "json.h"
-
 #include <sstream>
 #include <fstream>
 #include <cstdlib>
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
+
+#include "util.h"
+#include "json.h"
 
 using namespace std;
 
@@ -26,57 +27,30 @@ std::vector<std::string> &split(const std::string &s, char delim, std::vector<st
 std::vector<std::string> split(const std::string &s, char delim) {
   std::vector<std::string> elems;
   split(s, delim, elems);
+
   return elems;
 }
 
-std::string int_to_str(int number) {
-  std::stringstream ss;
-  ss << number;
-  return ss.str();
-}
-
 JSONObject::JSONObject() {
-  isNull = false;
-  isArray = false;
+  isNull   = false;
+  isArray  = false;
   isObject = false;
-  isBool = false;
+  isBool   = false;
   isString = false;
   isNumber = false;
 
-  data = NULL;
-  indexMap = NULL;
-  nameVector = NULL;
+  pData       = NULL;
+  pIndexMap   = NULL;
+  pNameVector = NULL;
 }
 
-JSONObject::JSONObject(const string& jsonString) {
-  isNull = false;
-  isArray = false;
-  isObject = false;
-  isBool = false;
-  isString = false;
-  isNumber = false;
-
-  data = NULL;
-  indexMap = NULL;
-  nameVector = NULL;
-
+JSONObject::JSONObject(const string& jsonString) : JSONObject() {
   if (!Parse(jsonString))
     ClearData();
 }
 
-JSONObject::JSONObject(JSONObject* makeCopyFrom) {
-  isNull = false;
-  isArray = false;
-  isObject = false;
-  isBool = false;
-  isString = false;
-  isNumber = false;
+JSONObject::JSONObject(const JSONObject* makeCopyFrom) : JSONObject(makeCopyFrom->ToString()) {
 
-  data = NULL;
-  indexMap = NULL;
-  nameVector = NULL;
-
-  Parse(makeCopyFrom->ToString());
 }
 
 JSONObject::~JSONObject() {
@@ -88,6 +62,7 @@ bool JSONObject::ParseFile(const string& filePath) {
   stringstream sstr;
   sstr << in.rdbuf();
   in.close();
+
   return Parse(sstr.str());
 }
 
@@ -97,9 +72,9 @@ bool JSONObject::IsOk() {
 }
 
 void JSONObject::ClearData() {
-  if (data != NULL) {
+  if (pData != NULL) {
     if (isArray || isObject) {
-      vector<JSONObject*>* children = (vector<JSONObject*>*) data;
+      vector<JSONObject*>* children = (vector<JSONObject*>*) pData;
       for (unsigned int i = 0; i < children->size(); i++) {
         if ((*children)[i] != NULL) {
           delete (*children)[i];
@@ -107,24 +82,24 @@ void JSONObject::ClearData() {
         }
       }
 
-      delete (vector<JSONObject*>*)data;
+      delete (vector<JSONObject*>*)pData;
     }
     else if (isBool)
-      delete (bool*)data;
+      delete (bool*)pData;
     else if (isString)
-      delete (string*)data;
+      delete (string*)pData;
     else if (isNumber)
-      delete (double*)data;
+      delete (double*)pData;
 
-    data = NULL;
+    pData = NULL;
   }
-  if (indexMap != NULL) {
-    delete indexMap;
-    indexMap = NULL;
+  if (pIndexMap != NULL) {
+    delete pIndexMap;
+    pIndexMap = NULL;
   }
-  if (nameVector != NULL) {
-    delete nameVector;
-    nameVector = NULL;
+  if (pNameVector != NULL) {
+    delete pNameVector;
+    pNameVector = NULL;
   }
 
   isNull = false;
@@ -201,11 +176,11 @@ bool JSONObject::Parse(const string& jsonString) {
 string GetPositionInformation(const string& str, int pos) {
   int n = 16;
   int startPos = pos - n;
+
   if (startPos < 0)
-  {
     startPos = 0;
-  }
-  return int_to_str(pos) + " in context: " + (startPos == 0 ? "" : "[...]") + str.substr(startPos, pos - startPos);
+
+  return intToStr(pos) + " in context: " + (startPos == 0 ? "" : "[...]") + str.substr(startPos, pos - startPos);
 }
 
 bool JSONObject::Parse(const string& jsonString, int& pos) {
@@ -363,7 +338,7 @@ string escapeString(const string& input) {
   return ret.str();
 }
 
-string JSONObject::ToString(int indentationDelta, int indentation) {
+string JSONObject::ToString(int indentationDelta, int indentation) const {
   bool indent = indentationDelta > 0;
 
   if (isNull)
@@ -402,7 +377,7 @@ string JSONObject::ToString(int indentationDelta, int indentation) {
     return ret.str();
   }
   if (isObject) {
-    vector<JSONObject*>* v = (vector<JSONObject*>*)data;
+    vector<JSONObject*>* v = (vector<JSONObject*>*)pData;
     if (v->size() == 0) {
       return "{}";
     }
@@ -413,7 +388,7 @@ string JSONObject::ToString(int indentationDelta, int indentation) {
       if (indent)
         ret << endl << string(indentation + indentationDelta, ' ');
 
-      ret << escapeString((*nameVector)[i]);
+      ret << escapeString((*pNameVector)[i]);
       if (indent)
         ret << ' ';
 
@@ -435,30 +410,30 @@ string JSONObject::ToString(int indentationDelta, int indentation) {
   return "";
 }
 
-vector<string> JSONObject::GetChildNames() {
+vector<string> JSONObject::GetChildNames() const {
   if (!isObject)
     return vector<string>();
 
-  return *nameVector;
+  return *pNameVector;
 }
 
 JSONObject* JSONObject::SetNameValue(const std::string& name, JSONObject* value) {
   if (!isObject)
     return NULL;
 
-  vector<JSONObject*>* v = (vector<JSONObject*>*)data;
+  vector<JSONObject*>* v = (vector<JSONObject*>*)pData;
 
-  if (indexMap->find(name) == indexMap->end()) {
-    (*indexMap)[name] = v->size();
+  if (pIndexMap->find(name) == pIndexMap->end()) {
+    (*pIndexMap)[name] = v->size();
     v->push_back(value);
-    nameVector->push_back(name);
+    pNameVector->push_back(name);
     return NULL;
   }
 
-  int index = (*indexMap)[name];
+  int index = (*pIndexMap)[name];
   JSONObject* old = (*v)[index];
   (*v)[index] = value;
-  (*nameVector)[index] = name;
+  (*pNameVector)[index] = name;
   return old;
 }
 
@@ -474,9 +449,9 @@ JSONObject* JSONObject::SetBool(bool value) {
   if (!isBool) {
     ClearData();
     isBool = true;
-    data = new bool;
+    pData = new bool;
   }
-  *(bool*)data = value;
+  *(bool*)pData = value;
 
   return this;
 }
@@ -485,10 +460,10 @@ JSONObject* JSONObject::SetString(const string& value) {
   if (!isString) {
     ClearData();
     isString = true;
-    data = new string();
+    pData = new string();
   }
 
-  *(string*)data = value;
+  *(string*)pData = value;
   return this;
 }
 
@@ -496,10 +471,10 @@ JSONObject* JSONObject::SetNumber(double value) {
   if (!isNumber) {
     ClearData();
     isNumber = true;
-    data = new double;
+    pData = new double;
   }
 
-  *(double*)data = value;
+  *(double*)pData = value;
   return this;
 }
 
@@ -507,7 +482,7 @@ JSONObject* JSONObject::SetArray() {
   if (!isArray) {
     ClearData();
     isArray = true;
-    data = new vector<JSONObject*>;
+    pData = new vector<JSONObject*>;
   }
 
   return this;
@@ -526,17 +501,17 @@ JSONObject* JSONObject::SetJSONObject() {
   if (!isObject) {
     ClearData();
     isObject = true;
-    data = new vector<JSONObject*>;
-    indexMap = new map<string, int>;
-    nameVector = new vector<string>;
+    pData = new vector<JSONObject*>;
+    pIndexMap = new map<string, int>;
+    pNameVector = new vector<string>;
   }
 
   return this;
 }
 
-JSONObject* JSONObject::GetPath(const std::string& path, char delim) {
+const JSONObject* JSONObject::GetPath(const std::string& path, char delim) const {
   vector<string> names = split(path, delim);
-  JSONObject* currentNode = this;
+  const JSONObject* currentNode = this;
 
   for (unsigned int i = 0; i < names.size(); i++) {
     currentNode = currentNode->Get(names[i]);
@@ -547,18 +522,17 @@ JSONObject* JSONObject::GetPath(const std::string& path, char delim) {
   return currentNode;
 }
 
-JSONObject* JSONObject::Get(const std::string& name) {
+JSONObject* JSONObject::Get(const std::string& name) const {
   if (!isObject)
     return NULL;
 
-  if (indexMap->find(name) == indexMap->end())
+  if (pIndexMap->find(name) == pIndexMap->end())
     return NULL;
 
-  return (*((vector<JSONObject*>*)data))[(*indexMap)[name]];
+  return (*((vector<JSONObject*>*)pData))[(*pIndexMap)[name]];
 }
 
-vector<JSONObject*>* JSONObject::GetArray(const std::string& name)
-{
+vector<JSONObject*>* JSONObject::GetArray(const std::string& name) const {
   JSONObject* c = NULL;
   if (!isObject || (c = Get(name)) == NULL)
     return NULL;
@@ -566,7 +540,7 @@ vector<JSONObject*>* JSONObject::GetArray(const std::string& name)
   return c->GetArray();
 }
 
-double JSONObject::GetNumber(const std::string& name) {
+double JSONObject::GetNumber(const std::string& name) const {
   JSONObject* c = NULL;
   if (!isObject || (c = Get(name)) == NULL)
     return 0.0;
@@ -574,7 +548,7 @@ double JSONObject::GetNumber(const std::string& name) {
   return c->GetNumber();
 }
 
-string JSONObject::GetString(const std::string& name) {
+string JSONObject::GetString(const std::string& name) const {
   JSONObject* c = NULL;
   if (!isObject || (c = Get(name)) == NULL)
     return "";
@@ -582,7 +556,7 @@ string JSONObject::GetString(const std::string& name) {
   return c->GetString();
 }
 
-bool JSONObject::GetBool(const std::string& name) {
+bool JSONObject::GetBool(const std::string& name) const {
   JSONObject* c = NULL;
   if (!isObject || (c = Get(name)) == NULL)
     return false;
@@ -590,54 +564,54 @@ bool JSONObject::GetBool(const std::string& name) {
   return c->GetBool();
 }
 
-vector<JSONObject*>* JSONObject::GetArray() {
+vector<JSONObject*>* JSONObject::GetArray() const {
   if (!isArray)
     return NULL;
 
-  return (vector<JSONObject*>*)data;
+  return (vector<JSONObject*>*)pData;
 }
 
-double JSONObject::GetNumber() {
+double JSONObject::GetNumber() const {
   if (!isNumber)
     return 0.0;
 
-  return *(double*)data;
+  return *(double*)pData;
 }
 
-string JSONObject::GetString() {
+string JSONObject::GetString() const {
   if (!isString)
     return "";
 
-  return *(string*)data;
+  return *(string*)pData;
 }
 
-bool JSONObject::GetBool() {
+bool JSONObject::GetBool() const {
   if (!isBool)
     return false;
 
-  return *(bool*)data;
+  return *(bool*)pData;
 }
 
-bool JSONObject::IsNull() {
+bool JSONObject::IsNull() const {
   return isNull;
 }
 
-bool JSONObject::IsArray() {
+bool JSONObject::IsArray() const {
   return isArray;
 }
 
-bool JSONObject::IsObject() {
+bool JSONObject::IsObject() const {
   return isObject;
 }
 
-bool JSONObject::IsBool() {
+bool JSONObject::IsBool() const {
   return isBool;
 }
 
-bool JSONObject::IsString() {
+bool JSONObject::IsString() const {
   return isString;
 }
 
-bool JSONObject::IsNumber() {
+bool JSONObject::IsNumber() const {
   return isNumber;
 }

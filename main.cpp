@@ -12,7 +12,7 @@ int main(int argc, const char* argv[]) {
   if (!bp.load(pBluePrint))
     printf("Error on loading blueprint.\n");
 
-  printf(bp.jsonStr().c_str());
+  printf(bp.toJsonStr());
 
   return 0;
 }
