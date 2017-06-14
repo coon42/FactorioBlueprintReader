@@ -78,6 +78,9 @@
     <ClCompile Include="..\json.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\blueprint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base64.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="..\zlib\zutil.h">
       <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blueprint.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
