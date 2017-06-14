@@ -1,9 +1,4 @@
-#include "base64.h"
-#include "gzip.h"
-#include "json.h"
-#include <fstream>
-
-using namespace std;
+#include "blueprint.h"
 
 const char* pBluePrint =
   "0eJydlt2KgzAQRl9F5jqCSdW2vsqyLP5Ml4CNkqTLivjua2qhRezGzJWYmJMvkxzMCFV7w15LZaEYQdadMlB8jGDktypb12aHHqEAafEKDFR"
@@ -12,10 +7,12 @@ const char* pBluePrint =
   "LX6OI5mysVxBV2Uglgt1I3qYKdkO8TUW0YStV6n7x9ztB8XKFYNCWM2luqzutUEcam8h2UYsX1/mD2tzhXBzSLMuPp3MyTX8brtvl";
 
 int main(int argc, const char* argv[]) {
-  string gzipStr = base64_decode(&pBluePrint[1]);
-  string json = decompressGzipString(gzipStr);
-  JSONObject jsonObj(json);
+  Blueprint bp;
 
-  printf(jsonObj.ToString(2).c_str());
+  if (!bp.load(pBluePrint))
+    printf("Error on loading blueprint.\n");
+
+  printf(bp.jsonStr().c_str());
+
   return 0;
 }
