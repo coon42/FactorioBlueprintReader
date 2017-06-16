@@ -177,6 +177,7 @@
     <ClInclude Include="..\blueprint.h" />
     <ClInclude Include="..\gzip.h" />
     <ClInclude Include="..\json.h" />
+    <ClInclude Include="..\main.h" />
     <ClInclude Include="..\util.h" />
     <ClInclude Include="..\zlib\crc32.h" />
     <ClInclude Include="..\zlib\deflate.h" />

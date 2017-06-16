@@ -23,6 +23,10 @@ bool Blueprint::load(const char* pBluePrint) {
   }
 }
 
+bool Blueprint::load(const std::string& bluePrintStr) {
+  return load(bluePrintStr.c_str());
+}
+
 const char* Blueprint::toJsonStr() const {
   jsonStrCache_ = json_.ToString(2);
 

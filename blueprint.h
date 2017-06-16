@@ -8,7 +8,8 @@ using namespace std;
 
 class Blueprint {
 public:
-  bool load(const char* pBluePrint);
+  bool load(const char* pBluePrintStr);
+  bool load(const std::string& bluePrintStr);
   const char* toJsonStr() const;
 
 private:
