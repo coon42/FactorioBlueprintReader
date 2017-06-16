@@ -1,5 +1,5 @@
+#include <wx/wx.h>
 #include "blueprint.h"
-#include "wxWidgets/include/wx/wx.h"
 
 const char* pBluePrint =
   "0eJydlt2KgzAQRl9F5jqCSdW2vsqyLP5Ml4CNkqTLivjua2qhRezGzJWYmJMvkxzMCFV7w15LZaEYQdadMlB8jGDktypb12aHHqEAafEKDFR"
@@ -49,10 +49,10 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
   wxMenu *menuFile = new wxMenu;
   menuFile->Append(ID_PasteBlueprint, "&Paste Blueprint\tCtrl-P", "Paste a blueprint");
 
-  auto item = new wxMenuItem(menuFile, ID_GetBlueprint, "&Get Blueprint\tCtrl-C", "Get blueprint");
-  item->Enable(false);
+  wxMenuItem* pGetBpItem = new wxMenuItem(menuFile, ID_GetBlueprint, "&Get Blueprint\tCtrl-C", "Get blueprint");
+  menuFile->Append(pGetBpItem);
+  pGetBpItem->Enable(false);
 
-  menuFile->Append(item);
   menuFile->AppendSeparator();
   menuFile->Append(wxID_EXIT);
 
@@ -67,6 +67,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
   CreateStatusBar();
   SetStatusText("Ready. Paste a blueprint to start.");
 }
+
 void MyFrame::OnExit(wxCommandEvent& event) {
   Close(true);
 }

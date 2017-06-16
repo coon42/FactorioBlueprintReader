@@ -1,5 +1,5 @@
 #include <sstream>
-
+#include <string.h>
 #include "zlib/zlib.h"
 #include "gzip.h"
 
