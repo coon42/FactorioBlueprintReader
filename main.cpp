@@ -60,7 +60,7 @@ void MainFrame::OnPasteBlueprint(wxCommandEvent& event) {
   }
 
   SetStatusText("A blueprint was pasted.");
-  string bluePrintStr = pasteDialog.getBlueprintStr();
+  string bluePrintStr = pasteDialog.getBlueprintStr().ToStdString();
 
   Blueprint bp;
   if (!bp.load(bluePrintStr)) {
