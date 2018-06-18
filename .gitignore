@@ -4,3 +4,6 @@
 /*.opendb
 /*.db
 factorioBlueprintReader
+*.exe
+*.ilk
+*.pdb
